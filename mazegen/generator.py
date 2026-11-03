@@ -1,5 +1,6 @@
 from enum import IntFlag
 
+
 class Direction(IntFlag):
 
     NORTH = 1
