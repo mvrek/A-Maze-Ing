@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 class ConfigError(Exception):
     """The configuration file is unreadable or invalid."""
 
@@ -17,7 +19,7 @@ def read_config(path: str) -> dict[str, str]:
             continue
 
         if "=" not in line:
-            raise ConfigError(f"line {number}: expected"
+            raise ConfigError(f"ERROR: line {number}: expected"
                               f" KEY=VALUE, got '{line}'")
 
         key, value = line.split("=", 1)
@@ -25,9 +27,28 @@ def read_config(path: str) -> dict[str, str]:
         value = value.strip()
 
         if not key or key in values:
-            raise ConfigError(f"line {number}: empty or "
+            raise ConfigError(f"ERROR: line {number}: empty or "
                               f"duplicated key '{key}'")
 
         values[key] = value
 
     return values
+
+
+def _parse_int(key: str, text: str) -> int:
+    try:
+        int(text)
+    except ValueError:
+        raise ConfigError(f"{key}: '{text}' is not an integer")
+    return text
+
+
+def _parse_point(key: str, text: str) -> tuple[int, int]:
+    parts: tuple[str, str] = text.split(",")
+    if len(parts) != 2:
+        raise ConfigError(f"ERROR: ")
+
+if __name__=="__main__":
+    print(read_config("/home/lfoti/Desktop/A-Maze-Ing/config.txt"))
+
+    #TODO CONTINUARE PARSING#

@@ -1,0 +1,3 @@
+# maze configuration
+WIDTH=20
+ENTRY=0,0
