@@ -1,11 +1,14 @@
 from amazing.output import format_maze, write_output
-from mazegen.generator import Direction, MazeGenerator
+from mazegen.generator import MazeGenerator
 
-gen = MazeGenerator(10, 10, seed=42, entry=(5, 3))
-genb= MazeGenerator(10, 10, seed=42)
-genb.generate()
+gen = MazeGenerator(20, 15, seed=42)
 gen.generate()
-text = format_maze(gen.grid, gen.entry, gen.exit_pos, gen._solve())
-text2 = format_maze(genb.grid, genb.entry, genb.exit_pos, "EESWW")
+print(all(gen.grid[y][x] == 15 for x, y in gen.pattern))
+print(gen.solution)
+text = format_maze(gen.grid, gen.entry, gen.exit_pos, gen.solution)
 write_output(text, "maze_test.txt")
-write_output(text2, "maze_test2.txt")
+
+try:
+    MazeGenerator(20, 15, entry=(6, 5))
+except ValueError as err:
+    print("ok:", err)

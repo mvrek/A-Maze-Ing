@@ -56,6 +56,7 @@ class MazeGenerator:
         self.exit_pos = exit_pos
         self.entry = entry
         self.solution: str = ""
+        self.pattern: set[Cell] = self._pattern_cells()
         if not self._in_bounds(entry[0], entry[1]):
             raise ValueError("Entry point"
                              " coordinates are out of the grid bounds!")
@@ -65,6 +66,24 @@ class MazeGenerator:
         if entry == exit_pos:
             raise ValueError("Exit and entry points"
                              " are placed at the same coordinates!")
+        if entry in self.pattern:
+            raise ValueError(f"Entry point {entry} is inside"
+                             " the 42 pattern!")
+
+    def _pattern_cells(self) -> set[Cell]:
+        """Return the cells of the centered drawn 42"""
+        pattern_w: int = len(_PATTERN_42[0])
+        pattern_h: int = len(_PATTERN_42)
+        if self.width < (pattern_w + 2) or self.height < (pattern_h + 2):
+            return set()
+        ox: int = (self.width - pattern_w) // 2
+        oy: int = (self.height - pattern_h) // 2
+        cells: set[Cell] = set()
+        for row, line in enumerate(_PATTERN_42):
+            for col, char in enumerate(line):
+                if char == "X":
+                    cells.add((ox + col, oy + row))
+        return cells
 
     def _in_bounds(self, x: int, y: int) -> bool:
         """Checks if the given cell
@@ -83,9 +102,8 @@ class MazeGenerator:
         dx, dy = direction.step
         nx, ny = x + dx, y + dy
         if not self._in_bounds(x, y) or not self._in_bounds(nx, ny):
-            raise ValueError(
-                f"({x}, {y}) verso {direction.name}: fuori dalla griglia!"
-            )
+            raise ValueError(f"({x}, {y}) verso {direction.name}:"
+                             " fuori dalla griglia!")
         self.grid[y][x] &= ~direction.value
         self.grid[ny][nx] &= ~direction.opposite.value
 
@@ -109,7 +127,7 @@ class MazeGenerator:
         It never returns in already visited cells."""
         self.grid = [[ALL_WALLS] * self.width for _ in range(self.height)]
         start = self.entry
-        visited: set[tuple[int, int]] = {start}
+        visited: set[tuple[int, int]] = {start} | self.pattern
         stack: list[tuple[int, int]] = [start]
         while stack:
             x, y = stack[-1]
@@ -180,3 +198,11 @@ _LETTER: dict[Direction, str] = {
     Direction.SOUTH: "S",
     Direction.WEST: "W"
 }
+
+_PATTERN_42: list[str] = [
+    "X.X.XXX",
+    "X.X...X",
+    "XXX.XXX",
+    "..X.X..",
+    "..X.XXX",
+]
