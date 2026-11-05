@@ -5,14 +5,14 @@ INSTALLED := $(VENV)/.installed
 MAIN    := a_maze_ing.py
 CONFIG  := config.txt
  
-.PHONY: install run debug clean fclean lint lint-strict test
+.PHONY: install run debug clean fclean lint lint-strict
  
 $(PY):
 	$(PYTHON) -m venv $(VENV)
  
 $(INSTALLED): $(PY)
 	$(PY) -m pip install --upgrade pip
-	$(PY) -m pip install flake8 mypy pytest build
+	$(PY) -m pip install flake8 mypy build
 	touch $(INSTALLED)
  
 install: $(INSTALLED)
@@ -38,6 +38,3 @@ lint: $(INSTALLED)
 lint-strict: $(INSTALLED)
 	$(PY) -m flake8 .
 	$(PY) -m mypy . --strict
- 
-test: $(INSTALLED)
-	$(PY) -m pytest
