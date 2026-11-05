@@ -278,19 +278,30 @@ class MazeGenerator:
         if loops >= minimum:
             return
         walls = [(x, y, d) for y in range(self.height)
-                 for x in range (self.width)
+                 for x in range(self.width)
                  for d in (Direction.EAST, Direction.SOUTH)]
         self._rng.shuffle(walls)
         for x, y, direction in walls:
             dx, dy = direction.step
             nx, ny = x + dx, y + dy
             if (not self._in_bounds(nx, ny) or
-                    not self.self.has_wall(nx, ny, direction) or
+                    not self.has_wall(x, y, direction) or
                     (x, y) in self.pattern or
                     (nx, ny) in self.pattern):
                 continue
             else:
-                
+                self._open_wall(x, y, direction)
+                if self._creates_open_3x3(x, y):
+                    self._close_wall(x, y, direction)
+                    continue
+                loops += 1
+                if loops >= minimum:
+                    return
+        raise ValueError(
+            f"{self.width} * {self.height} is too small for a"
+            f" Pac-Man board. It cannot have {minimum} "
+            "independent loops!"
+        )
 
 _OPPOSITE: dict[Direction, Direction] = {
     Direction.NORTH: Direction.SOUTH,
