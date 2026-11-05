@@ -71,6 +71,9 @@ class MazeGenerator:
         if entry in self.pattern:
             raise ValueError(f"Entry point {entry} is inside"
                              " the 42 pattern!")
+        if exit_pos in self.pattern:
+            raise ValueError(f"Exit point {exit_pos} is inside"
+                             " the 42 pattern!")
 
     def _pattern_cells(self) -> set[Cell]:
         """Return the cells of the centered drawn 42"""
@@ -137,7 +140,10 @@ class MazeGenerator:
 
     def generate(self) -> None:
         """Generate a random grid (using the random seed if given), then
-        dig a perfect labyrinth that connects every cell.
+        dig either a perfect labyrinth that connects every cell
+        or a Pac-Man style grid with no or few dead ends (the labyrinth type
+        is decided by the "perfect" parameter in the constructor).
+        It then calculates the shortest path possible from entry to exit point.
         It never returns in already visited cells."""
         self.grid = [[ALL_WALLS] * self.width for _ in range(self.height)]
         start = self.entry
@@ -155,6 +161,9 @@ class MazeGenerator:
                 nx, ny = x + dx, y + dy
                 visited.add((nx, ny))
                 stack.append((nx, ny))
+        if not self.perfect:
+            self._braid()
+            self._ensure_loops(MIN_LOOPS)
         self.solution = self._solve()
 
     def _solve(self) -> str:

@@ -1,0 +1,3 @@
+Dobbiamo aggiungere nel config un limite massimo di grandezza del
+labirinto per non far andare in crash il programma!
+Dobbiamo aggiungere il parametro perfect nel config.

@@ -30,7 +30,8 @@ def main(argv: list[str]) -> int:
             height=config.height,
             seed=config.seed,
             entry=config.entry,
-            exit_pos=config.exit_pos
+            exit_pos=config.exit_pos,
+            perfect=config.perfect
         )
         if not generator.pattern:
             print("Maze too small to display the 42 pattern",
