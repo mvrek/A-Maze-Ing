@@ -255,7 +255,42 @@ class MazeGenerator:
                     continue
                 break
 
+    def _count_loops(self) -> int:
+        """Counts the amount of loops possible
+        in an imperfect grid. At least 2 loops are
+        needed for the grid to be considered valid."""
+        passages: int = 0
+        for y in range(self.height):
+            for x in range(self.width):
+                if (self._in_bounds(x + 1, y) and
+                        not self.has_wall(x, y, Direction.EAST)):
+                    passages += 1
+                if (self._in_bounds(x, y + 1) and
+                        not self.has_wall(x, y, Direction.SOUTH)):
+                    passages += 1
+        cells: int = self.width * self.height - len(self.pattern)
+        return passages - cells + 1
 
+    def _ensure_loops(self, minimum: int) -> None:
+        """Open extra walls until the grid has
+        at least the minimum amount of loops required."""
+        loops: int = self._count_loops()
+        if loops >= minimum:
+            return
+        walls = [(x, y, d) for y in range(self.height)
+                 for x in range (self.width)
+                 for d in (Direction.EAST, Direction.SOUTH)]
+        self._rng.shuffle(walls)
+        for x, y, direction in walls:
+            dx, dy = direction.step
+            nx, ny = x + dx, y + dy
+            if (not self._in_bounds(nx, ny) or
+                    not self.self.has_wall(nx, ny, direction) or
+                    (x, y) in self.pattern or
+                    (nx, ny) in self.pattern):
+                continue
+            else:
+                
 
 _OPPOSITE: dict[Direction, Direction] = {
     Direction.NORTH: Direction.SOUTH,
@@ -287,3 +322,5 @@ _PATTERN_42: list[str] = [
     "..X.X..",
     "..X.XXX",
 ]
+
+MIN_LOOPS: int = 2
