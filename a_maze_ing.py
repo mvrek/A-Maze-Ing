@@ -35,7 +35,7 @@ def main(argv: list[str]) -> int:
         )
         if not generator.pattern:
             print("Maze too small to display the 42 pattern",
-                  file=sys.stderr)        
+                  file=sys.stderr)
         generator.generate()
         text = format_maze(
             generator.grid, generator.entry,

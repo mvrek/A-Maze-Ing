@@ -123,7 +123,7 @@ class MazeGenerator:
                              " is out of the grid!")
         self.grid[y][x] |= direction.value
         self.grid[ny][nx] |= direction.opposite.value
-    
+
     def _unvisited_neighbours(
             self, x: int, y: int, visited: set[tuple[int, int]]
     ) -> list[Direction]:
@@ -225,7 +225,7 @@ class MazeGenerator:
         return True
 
     def _creates_open_3x3(self, x: int, y: int) -> bool:
-        """Checks if the given cell is in a 3x3 
+        """Checks if the given cell is in a 3x3
         block with no inner walls"""
         for top in range(y - 2, y + 1):
             for left in range(x - 2, x + 1):
@@ -311,6 +311,7 @@ class MazeGenerator:
             f" Pac-Man board. It cannot have {minimum} "
             "independent loops!"
         )
+
 
 _OPPOSITE: dict[Direction, Direction] = {
     Direction.NORTH: Direction.SOUTH,

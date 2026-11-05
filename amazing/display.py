@@ -20,7 +20,7 @@ def build_canvas(grid: list[list[int]], entry: tuple[int, int],
     """
     height = len(grid)
     width = len(grid[0])
-    canvas = [[WALL] * (2 * width + 1) for _ in range (2 * height + 1)]
+    canvas = [[WALL] * (2 * width + 1) for _ in range(2 * height + 1)]
     for y in range(height):
         for x in range(width):
             cx = 2 * x + 1
