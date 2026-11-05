@@ -40,13 +40,15 @@ class MazeGenerator:
     def __init__(self, width: int, height: int,
                  seed: int | None = None,
                  entry: tuple[int, int] = (0, 0),
-                 exit_pos: tuple[int, int] | None = None) -> None:
+                 exit_pos: tuple[int, int] | None = None,
+                 perfect: bool = True) -> None:
         """Initialize the maze, checking if every
         argument respect its limitations."""
         if width < 1 or height < 1:
             raise ValueError("Width and height values must be greater than 0!")
         self.width: int = width
         self.height: int = height
+        self.perfect: bool = perfect
         self._rng = random.Random(seed)
         self.grid: list[list[int]] = [
             [ALL_WALLS] * width for _ in range(height)
@@ -97,16 +99,28 @@ class MazeGenerator:
 
     def _open_wall(self, x: int, y: int, direction: Direction) -> None:
         """Opens the wall of a cell in a given direction, then opens it
-        from the cell in the opposit direction in order to make the wall
+        from the cell from the opposite direction in order to make the wall
         coherent."""
         dx, dy = direction.step
         nx, ny = x + dx, y + dy
         if not self._in_bounds(x, y) or not self._in_bounds(nx, ny):
-            raise ValueError(f"({x}, {y}) verso {direction.name}:"
-                             " fuori dalla griglia!")
+            raise ValueError(f"({x}, {y})'s {direction.name} neighbour"
+                             " is out of the grid!")
         self.grid[y][x] &= ~direction.value
         self.grid[ny][nx] &= ~direction.opposite.value
 
+    def _close_wall(self, x: int, y: int, direction: Direction) -> None:
+        """Close the wall of a cell in a given direction, then closes it
+        from the cell from the opposite direction in order to make the
+        wall coherent."""
+        dx, dy = direction.step
+        nx, ny = x + dx, y + dy
+        if not self._in_bounds(x, y) or not self._in_bounds(nx, ny):
+            raise ValueError(f"({x}, {y})'s {direction.name} neighbour"
+                             " is out of the grid!")
+        self.grid[y][x] |= direction.value
+        self.grid[ny][nx] |= direction.opposite.value
+    
     def _unvisited_neighbours(
             self, x: int, y: int, visited: set[tuple[int, int]]
     ) -> list[Direction]:
@@ -174,6 +188,73 @@ class MazeGenerator:
             cell = previous
         letters.reverse()
         return "".join(letters)
+
+    def _is_dead_end(self, x: int, y: int) -> bool:
+        """Checks if the given cell is a dead end."""
+        if (x, y) in self.pattern:
+            return False
+        open_sides: int = 0
+        for direction in Direction:
+            if not self.has_wall(x, y, direction):
+                open_sides += 1
+        return open_sides == 1
+
+    def _is_open_block(self, left: int, top: int) -> bool:
+        """Tell whether the 3x3 block at (left, top) has
+        no inner walls."""
+        if not (self._in_bounds(left, top)
+                and self._in_bounds(left + 2, top + 2)):
+            return False
+        for cy in range(top, top + 3):
+            for cx in range(left, left + 3):
+                if not cx == left + 2:
+                    if self.has_wall(cx, cy, Direction.EAST):
+                        return False
+                if not cy == top + 2:
+                    if self.has_wall(cx, cy, Direction.SOUTH):
+                        return False
+        return True
+
+    def _creates_open_3x3(self, x: int, y: int) -> bool:
+        """Checks if the given cell is in a 3x3 
+        block with no inner walls"""
+        for top in range(y - 2, y + 1):
+            for left in range(x - 2, x + 1):
+                if self._is_open_block(left, top):
+                    return True
+        return False
+
+    def _braid(self) -> None:
+        """Remove dead ends by opening one
+        more wall in each of them, while avoiding to create
+        3x3 open areas."""
+        cells = [(x, y) for y in range(self.height)
+                 for x in range(self.width)]
+        self._rng.shuffle(cells)
+        for x, y in cells:
+            if not self._is_dead_end(x, y):
+                continue
+            preferred: list[Direction] = []
+            others: list[Direction] = []
+            for direction in Direction:
+                dx, dy = direction.step
+                nx, ny = x + dx, y + dy
+                if (self.has_wall(x, y, direction) and
+                        self._in_bounds(nx, ny) and
+                        not (nx, ny) in self.pattern):
+                    if self._is_dead_end(nx, ny):
+                        preferred.append(direction)
+                    else:
+                        others.append(direction)
+            self._rng.shuffle(preferred)
+            self._rng.shuffle(others)
+            for direction in preferred + others:
+                self._open_wall(x, y, direction)
+                if self._creates_open_3x3(x, y):
+                    self._close_wall(x, y, direction)
+                    continue
+                break
+
 
 
 _OPPOSITE: dict[Direction, Direction] = {
