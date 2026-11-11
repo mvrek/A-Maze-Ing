@@ -185,12 +185,35 @@ displayed).
 
 ### Planning
 
-TODO (to be filled in by the team: the initial plan, how it evolved, and when
-each part was finished).
+### Planning
+
+We started by splitting the work so that we would not interfere with each
+other, and we agreed in advance on function signatures, names and data
+formats (the grid as wall bits, `(x, y)` coordinates, the `Tile` enum). Each of
+us then worked on their own part, and we met to review and explain our code
+every time one of us finished a key piece (configuration parser, generator,
+canvas, display).
+
+In the last phase we worked together on connecting the modules, and then
+split the final checks: fixing `flake8` and `mypy --strict` errors, adding
+docstrings, testing edge cases and bad configuration files,
 
 ### What worked well / what could be improved
 
-TODO (to be filled in by the team).
+**What worked well.** The project is easy to split: the generator, the
+configuration parser and the display only talk to each other through a few
+simple interfaces, so we rarely had to wait for the other person. Explaining
+our code to each other also helped us find bugs early. Checking the output with
+`maze_analyzer.py` and with unusual configurations (tiny grids, wrong values)
+gave us confidence that the program never crashes.
+
+**What could be improved.** When two parts were written separately, small
+mismatches appeared after merging (for example a function whose arguments
+differed between the canvas and the display), so we should have tested the
+connection earlier and run `flake8` and `mypy` after every merge. We would also
+have liked a richer interface (custom sprites and a more personal look), but it
+would have required changing too much of the code, so we kept the colour-based
+terminal display.
 
 ### Tools
 
