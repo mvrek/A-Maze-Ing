@@ -81,6 +81,8 @@ def _parse_bool(key: str, text: str) -> bool:
 
 REQUIRED_KEYS = ("WIDTH", "HEIGHT", "ENTRY", "EXIT",
                  "OUTPUT_FILE", "PERFECT")
+KNOWN_KEYS = REQUIRED_KEYS + ("SEED",)
+MAX_SIZE = 500
 
 
 @dataclass(frozen=True)
@@ -110,6 +112,11 @@ def _validate(config: Config) -> None:
         raise ConfigError(
             f"HEIGHT must be at least 1, got {config.height}."
         )
+    if config.width > MAX_SIZE or config.height > MAX_SIZE:
+        raise ConfigError(
+            f"WIDTH and HEIGHT must be at most {MAX_SIZE}, "
+            f"got {config.width}x{config.height}"
+        )
     for name, (x, y) in (
         ("ENTRY", config.entry),
         ("EXIT", config.exit_pos)
@@ -125,7 +132,7 @@ def _validate(config: Config) -> None:
             f"both are {config.entry}"
         )
     if config.output_file == "":
-        raise ConfigError("OUTPUT FILE is empty")
+        raise ConfigError("OUTPUT_FILE must not be empty")
 
 
 def load_config(path: str) -> Config:
@@ -140,8 +147,12 @@ def load_config(path: str) -> Config:
     for key in REQUIRED_KEYS:
         if key not in values:
             missing.append(key)
+    unknown = [key for key in values if key not in KNOWN_KEYS]
     if missing:
-        raise ConfigError(f"missing keys: {', '.join(missing)}")
+        message = f"missing keys: {', '.join(missing)}"
+        if unknown:
+            message += f" (unknown keys: {', '.join(unknown)})"
+        raise ConfigError(message)
     seed = (_parse_int("SEED", values["SEED"])
             if "SEED" in values else None)
     config = Config(

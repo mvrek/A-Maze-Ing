@@ -58,8 +58,8 @@ ignored.
 
 | Key | Meaning | Example |
 |---|---|---|
-| `WIDTH` | number of cells per row (integer, at least 1) | `WIDTH=20` |
-| `HEIGHT` | number of rows (integer, at least 1) | `HEIGHT=15` |
+| `WIDTH` | number of cells per row (integer, from 1 to 500) | `WIDTH=20` |
+| `HEIGHT` | number of rows (integer, from 1 to 500) | `HEIGHT=15` |
 | `ENTRY` | entry cell `x,y` | `ENTRY=0,0` |
 | `EXIT` | exit cell `x,y`, different from the entry | `EXIT=19,14` |
 | `OUTPUT_FILE` | path of the output file | `OUTPUT_FILE=maze.txt` |
@@ -182,9 +182,7 @@ displayed).
 - **mde-matt**: maze generator (`mazegen/generator.py`) including the "42" and
   the non-perfect mode, output file (`amazing/output.py`), terminal rendering
   and menu (`amazing/display.py`), packaging.
-
-### Planning
-
+  
 ### Planning
 
 We started by splitting the work so that we would not interfere with each
@@ -196,7 +194,8 @@ canvas, display).
 
 In the last phase we worked together on connecting the modules, and then
 split the final checks: fixing `flake8` and `mypy --strict` errors, adding
-docstrings, testing edge cases and bad configuration files,
+docstrings, testing edge cases and bad configuration files, packaging
+`mazegen`, and writing this README.
 
 ### What worked well / what could be improved
 
