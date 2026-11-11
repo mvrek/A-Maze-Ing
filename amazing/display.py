@@ -1,6 +1,6 @@
 """Terminal rendering of the maze with ANSI colors."""
 
-from amazing.canvas import Canvas, Tile, build_canvas
+from amazing.canvas import Canvas, Tile, add_path, build_canvas
 from mazegen import MazeGenerator
 from collections.abc import Callable
 import shutil
@@ -20,9 +20,11 @@ THEMES: list[Theme] = [
      Tile.PATH: 51, Tile.PATTERN: 244},
 ]
 
+
 def _block(colour: int, width: int) -> str:
     """Return a block of 'width' characters with the given background color."""
     return f"\033[48;5;{colour}m" + " " * width
+
 
 def render(canvas: Canvas, theme: Theme, tile_width: int = 2) -> str:
     """Turn a canvas into coloured text, two characters per tile."""
@@ -42,6 +44,7 @@ def tile_width_for(canvas: Canvas) -> int:
     else:
         return 1
 
+
 def too_wide(canvas: Canvas) -> bool:
     """Tell whether the canvas does not fit even with one char per tile."""
     return len(canvas[0]) > shutil.get_terminal_size().columns
@@ -57,6 +60,7 @@ MENU = (
     "4. Quit"
 )
 
+
 def run_display(gen: MazeGenerator,
                 regenerate: Callable[[], MazeGenerator]) -> None:
     """Show the maze and handle the user's choices until Quit"""
@@ -64,7 +68,10 @@ def run_display(gen: MazeGenerator,
     theme_index = 0
     message = ""
     while True:
-        canvas = build_canvas(gen, show_path)
+        canvas = build_canvas(gen.grid, gen.entry, gen.exit_pos,
+                              gen.pattern)
+        if show_path:
+            add_path(canvas, gen.entry, gen.solution)
         width = tile_width_for(canvas)
         print(CLEAR + render(canvas, THEMES[theme_index], width))
         print(MENU)
@@ -79,7 +86,10 @@ def run_display(gen: MazeGenerator,
             return
         message = ""
         if choice == "1":
-            gen = regenerate()
+            try:
+                gen = regenerate()
+            except (ValueError, OSError) as error:
+                message = f"Cannot regenerate: {error}"
         elif choice == "2":
             show_path = not show_path
         elif choice == "3":
