@@ -5,6 +5,7 @@ import sys
 from amazing.config import ConfigError, load_config
 from amazing.output import format_maze, write_output
 from mazegen.generator import MazeGenerator
+from amazing.display import run_display
 
 
 def main(argv: list[str]) -> int:
@@ -49,6 +50,24 @@ def main(argv: list[str]) -> int:
         print(f"Cannot write output: {e}", file=sys.stderr)
         return 1
     print(f"Maze written to {config.output_file}")
+
+    def make_new_maze() -> MazeGenerator:
+        """Build, generate and save a new maze with a random seed."""
+        new_gen = MazeGenerator(
+            width=config.width,
+            height=config.height,
+            seed=None,
+            entry=config.entry,
+            exit_pos=config.exit_pos,
+            perfect=config.perfect,
+        )
+        new_gen.generate()
+        text = format_maze(new_gen.grid, new_gen.entry,
+                           new_gen.exit_pos, new_gen.solution)
+        write_output(text, config.output_file)
+        return new_gen
+
+    run_display(generator, make_new_maze)
     return 0
 
 
