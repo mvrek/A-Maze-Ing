@@ -1,3 +1,4 @@
+"""Format a maze as text and write it to the output file."""
 def format_maze(grid: list[list[int]], entry: tuple[int, int],
                 exit_pos: tuple[int, int], solution: str) -> str:
     """Returns the grid of the maze as a string, where the cells

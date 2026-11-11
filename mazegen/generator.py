@@ -1,3 +1,4 @@
+"""Maze generator: grid, "42" pattern, perfect and Pac-Man modes."""
 from enum import IntFlag
 import random
 from collections import deque
@@ -49,7 +50,7 @@ class MazeGenerator:
         self.width: int = width
         self.height: int = height
         self.perfect: bool = perfect
-        self._rng = random.Random(seed)
+        self.  """Maze generator: grid, "42" pattern, perfect and Pac-Man modes."""_rng = random.Random(seed)
         self.grid: list[list[int]] = [
             [ALL_WALLS] * width for _ in range(height)
         ]
