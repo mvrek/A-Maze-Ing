@@ -82,7 +82,7 @@ def _parse_bool(key: str, text: str) -> bool:
 REQUIRED_KEYS = ("WIDTH", "HEIGHT", "ENTRY", "EXIT",
                  "OUTPUT_FILE", "PERFECT")
 KNOWN_KEYS = REQUIRED_KEYS + ("SEED",)
-MAX_SIZE = 500
+MAX_SIZE = 100
 
 
 @dataclass(frozen=True)
