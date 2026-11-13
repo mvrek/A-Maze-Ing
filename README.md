@@ -58,8 +58,8 @@ ignored.
 
 | Key | Meaning | Example |
 |---|---|---|
-| `WIDTH` | number of cells per row (integer, from 1 to 500) | `WIDTH=20` |
-| `HEIGHT` | number of rows (integer, from 1 to 500) | `HEIGHT=15` |
+| `WIDTH` | number of cells per row (integer, from 1 to 100) | `WIDTH=20` |
+| `HEIGHT` | number of rows (integer, from 1 to 100) | `HEIGHT=15` |
 | `ENTRY` | entry cell `x,y` | `ENTRY=0,0` |
 | `EXIT` | exit cell `x,y`, different from the entry | `EXIT=19,14` |
 | `OUTPUT_FILE` | path of the output file | `OUTPUT_FILE=maze.txt` |
@@ -80,7 +80,7 @@ HEIGHT=15
 ENTRY=0,0
 EXIT=19,14
 OUTPUT_FILE=maze.txt
-PERFECT=True
+PERFECT=False
 SEED=42
 ```
 
