@@ -155,7 +155,7 @@ def load_config(path: str) -> Config:
         raise ConfigError(message)
     if unknown:
         raise ConfigError(
-            f"unknown keys: {', '.join(unknown)}"
+            f"unknown keys: {', '.join(unknown)} "
             f"(allowed: {', '.join(KNOWN_KEYS)})"
         )
     seed = (_parse_int("SEED", values["SEED"])

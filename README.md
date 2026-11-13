@@ -70,7 +70,8 @@ Coordinates are `(x, y)` with `(0, 0)` in the top-left corner. Entry and exit
 must be inside the grid. Any error (missing file, missing key, bad value) is
 reported on `stderr` with exit code 1; the program never crashes with a
 traceback.
-
+Keys are case-sensitive. Unknown keys are rejected with an error, so that a 
+typo (for example SEDD instead of SEED) cannot silently change the result.
 Default configuration (`config.txt`):
 
 ```
